@@ -33,10 +33,9 @@ class Movie(models.Model):
     genres = models.ManyToManyField(Genre, related_name="movies")
 
     def save(self, *args, **kwargs):
-        actors = kwargs.pop("actors", None)
-        genres = kwargs.pop("genres", None)
         super().save(*args, **kwargs)
 
+    def set_related_fields(self, actors=None, genres=None):
         if actors is not None:
             self.actors.set(actors)
         if genres is not None:

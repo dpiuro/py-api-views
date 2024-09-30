@@ -34,29 +34,30 @@ class MovieSerializer(serializers.Serializer):
         queryset=Genre.objects.all()
     )
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> Movie:
         actors = validated_data.pop("actors", [])
         genres = validated_data.pop("genres", [])
         movie = Movie.objects.create(**validated_data)
-        movie.actors.set(actors)
-        movie.genres.set(genres)
+        movie.set_related_fields(actors=actors, genres=genres)
         return movie
 
-    def update(self, instance, validated_data):
+    def update(self, instance: Movie, validated_data: dict) -> Movie:
         actors = validated_data.pop("actors", None)
         genres = validated_data.pop("genres", None)
 
-        instance.title = validated_data.get("title", instance.title)
+        instance.title = validated_data.get(
+            "title",
+            instance.title
+        )
         instance.description = validated_data.get(
             "description",
             instance.description
         )
-        instance.duration = validated_data.get("duration", instance.duration)
+        instance.duration = validated_data.get(
+            "duration",
+            instance.duration
+        )
 
-        if actors is not None:
-            instance.actors.set(actors)
-        if genres is not None:
-            instance.genres.set(genres)
-
+        instance.set_related_fields(actors=actors, genres=genres)
         instance.save()
         return instance
